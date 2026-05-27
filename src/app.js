@@ -9,6 +9,6 @@ app.use(express.json());
 
 app.use("/api/auth", authRoutes);
 app.use("/api/home", authMiddleware, homeRoutes);
-app.use("/api/image", authMiddleware, imageRoutes);
+app.use("/api/image", imageRoutes);
 
 module.exports = app;

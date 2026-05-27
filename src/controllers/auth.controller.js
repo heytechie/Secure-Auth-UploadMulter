@@ -62,7 +62,32 @@ const login = async(req,res)=>{
     }
 }
 
+const changePass = async(req,res)=>{
+    try{
+       const user  = req.user;
+       if(!user){
+        return res.status(401).json({message:"Unauthorized"});
+       }
+       const userFind = await Auth.findById(user._id);
+        if(!userFind){
+            return res.status(404).json({message:"User not found"});
+        }
+        const {password,newPassword} = req.body;
+        const passMatch  = await bcrypt.compare(password,userFind.password);
+        if(!passMatch){
+            return res.status(400).json({message:"Current password is incorrect"});
+        }
+        const hashNewPass = await bcrypt.hash(newPassword,10);
+        userFind.password = hashNewPass;
+        await userFind.save();
+        res.status(200).json({message:"Password changed successfully"});
+    }catch(err){
+        res.status(500).json({message:"Internal server error"});
+    }
+}
+
 module.exports = {
     register,
-    login
+    login,
+    changePass
 };
